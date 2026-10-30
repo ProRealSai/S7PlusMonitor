@@ -1,65 +1,43 @@
 # S7Plus 监视器
 
-面向西门子 S7-1200 / S7-1500 的 Windows 桌面监视工具。通过 S7CommPlus（TLS 或 Legacy Challenge）浏览符号变量、周期读取、强制写入，并把监视点与趋势采样保存在本地 SQLite。
+S7Plus 监视器是给西门子 **S7-1200 / S7-1500** 用的 Windows 桌面工具。它按 TIA 里的**符号名**连上 PLC，把变量找出来、盯着看、需要时改一下，并把常用的监视表和趋势记在本机，下次打开还在。
 
-## 功能
+适合调试、试运行和现场维护：不必为了看几个 BOOL 或 REAL 再开一套工程软件。支持较新的加密通讯，也兼容没有 TLS 的老固件。关窗口可以缩到托盘，轮询继续跑。
 
-- **连接**：多档案、主机/端口 102、超时、用户名密码（DPAPI 保护）、TLS / Legacy / Auto 回退
-- **浏览**：在线符号目录、筛选、导出 Excel、加入监视
-- **监视**：分批轮询（每批 800 点）、BOOL 翻转、写值、托盘驻留
-- **趋势**：实时曲线与 SQLite 历史采样（单视图最多 500 条趋势项）
+## 能做什么
 
-数据目录：`%LocalAppData%\S7PlusMonitor\`（库文件 `s7plus_monitor.db`）。
+主窗口三个页：**连接**、**浏览**、**监视**。
 
-## 系统要求
+### 连接
 
-- Windows 10 19041 或更高
-- 开发：.NET 10 SDK
-- 运行：使用仓库旁 `installer/output` 中的安装包时为 **win-x64 自包含**，无需预装运行时
+把每台 PLC 存成一份档案：名称、IP、端口（一般是 102）、超时、可选用户名和密码。密码加密保存在本机，界面里可以临时显示。
 
-## 构建
+可以建多份档案、指定启动时默认用哪一份。连上之后，通讯参数会锁住，避免轮询中途改错目标。
 
-```powershell
-dotnet build S7PlusMonitor.slnx -c Release
-```
+安全方式三种：
 
-发布自包含包（供 Inno Setup 打包）：
+- **TLS**：走加密通道，对应新项目、新固件
+- **Legacy Challenge**：给还不走 TLS 的 CPU
+- **Auto**：先试 TLS，不行再退回 Legacy（可由驱动在一次连接里完成，或由软件连两次）
 
-```powershell
-dotnet publish S7PlusMonitor\S7PlusMonitor.csproj -c Release -r win-x64 --self-contained true
-```
+连上后会自动拉一次变量目录。监视周期也可以按档案保存，短到接近连续读，长到按秒、按分钟扫一眼。
 
-安装脚本在上一级目录 `installer/S7PlusMonitor.iss`，编译后安装包输出到 `installer/output/`。
+### 浏览
 
-## PLC 驱动（S7CommPlusDriver 5.0）
+从 PLC 拉当前程序里的符号：名称、类型、地址、数组大小等。列表可按符号、类型、地址过滤，点一行能看更细的属性。
 
-程序已升级到 `DotNetProjects.S7CommPlusDriver` 5.0.0。现有连接 / 浏览 / 分批读 / 写走的是 `S7CommPlusClient`，**可以继续工作**，并自动获得 5.0 的批量读组包与更少分配。
+需要备份或给别人对照时，可以导出 Excel。选中变量后加入监视表，不用手抄符号名。
 
-当前 **已经用到**：
+### 监视
 
-- `ConnectAsync`、`BrowseAsync`、`GetTagsBySymbolsAsync`、`ReadAsync`、`WriteAsync`、`LegitimateAsync`
-- Auto / TLS / Legacy Challenge、BouncyCastle TLS
-- 浏览结果里的数组维度（`ArrayElementCount` / `ArrayDimensions`）
+监视页上半是当前表，下半是趋势。
 
-当前 **没有接到界面或 `IPlcService`**（驱动里有、本程序未封装）：
+表里周期刷新质量与数值，BOOL 可一键翻转，其它类型可按当前显示格式写入。轮询状态、耗时和点数在底栏。点关窗口时可选退出或留在托盘，托盘提示里能看到是否还在连、是否还在采。
 
-- 读流水线 `ReadPipelineDepth`（默认 1，等于未开启）
-- 变量/报警订阅、活动报警与文本表
-- CPU 状态 / 启停 / 扫描周期 / 内存
-- 块元数据、在线监视、TIS 轨迹
-- 紧凑符号目录缓存、`GetCommunicationResourcesAsync`
-- 工程会话角色 `SessionRole.EngineeringSystem`
+趋势可同时看多条曲线（有数量上限，避免一次拖进整台 CPU）。实时窗口按滚动时长显示；也可以把采样写入本机历史，事后把时间轴拉回去看。坐标轴可自动或手动，实时和历史分开设。
 
-要使用这些能力，需要扩展 `IPlcService` 和对应页面，不是换包就能出现菜单。
+## 数据放在哪
 
-## 第三方组件
+档案、监视表、趋势视图和历史采样都在当前 Windows 用户目录下，不跟着安装目录走，重装软件一般不会丢配置。密码不进明文库。
 
-本仓库源码以 MIT 授权。依赖包各自遵循其许可证，主要包括：
-
-- [DotNetProjects.S7CommPlusDriver](https://github.com/dotnetprojects/S7CommPlusDriver)（LGPL-3.0）
-- sqlite-net-pcl、SQLitePCLRaw、SourceGear.sqlite3
-- MaterialDesignThemes、LiveCharts、CommunityToolkit.Mvvm、ClosedXML
-
-## 许可
-
-见 [LICENSE](LICENSE)（MIT）。
+本软件按 **MIT** 授权，见 [LICENSE](LICENSE)。
