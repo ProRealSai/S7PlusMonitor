@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="S7PlusMonitor.Core/S7PlusMonitor.Core.csproj" />
+  <Project Path="S7PlusMonitor/S7PlusMonitor.csproj" />
+</Solution>

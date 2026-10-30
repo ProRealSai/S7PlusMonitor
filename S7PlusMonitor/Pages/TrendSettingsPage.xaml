@@ -1,0 +1,244 @@
+<UserControl x:Class="S7PlusMonitor.Pages.TrendSettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{StaticResource PageBackgroundBrush}">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding WindowSubtitle}"
+                   Style="{StaticResource CaptionText}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,10" />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <materialDesign:Card Style="{StaticResource AppCard}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="📺" Style="{StaticResource EmojiGlyph}" />
+                        <TextBlock Text="实时视图" Style="{StaticResource PanelTitleText}" />
+                    </StackPanel>
+
+                    <TextBlock Text="X 轴 · 滚动时长" Style="{StaticResource FormSectionTitle}" Margin="0,0,0,8" />
+                    <Border Style="{StaticResource FormGroupBorder}" Margin="0,0,0,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="88" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="时长" Style="{StaticResource FormFieldLabel}" />
+                            <TextBlock Grid.Column="2" Text="单位" Style="{StaticResource FormFieldLabel}" />
+                            <TextBox Grid.Row="1"
+                                     Text="{Binding LiveRollingWindowValueText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormTextBox}"
+                                     ToolTip="{Binding LiveViewHint}" />
+                            <ComboBox Grid.Row="1" Grid.Column="2"
+                                      ItemsSource="{Binding LiveRollingWindowUnitOptions}"
+                                      SelectedItem="{Binding SelectedLiveRollingWindowUnit}"
+                                      DisplayMemberPath="Label"
+                                      Style="{StaticResource FormComboBox}" />
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="{Binding LiveViewHint}"
+                               Style="{StaticResource CaptionText}"
+                               TextWrapping="Wrap" />
+
+                    <Border Height="1" Background="{StaticResource FieldBorderBrush}" Margin="0,12,0,12" />
+
+                    <TextBlock Text="Y 轴范围" Style="{StaticResource FormSectionTitle}" Margin="0,0,0,8" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <CheckBox IsChecked="{Binding LiveYAutoScale}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding LiveYScaleModeText}"
+                                   Style="{StaticResource CaptionText}"
+                                   VerticalAlignment="Center"
+                                   Margin="8,0,0,0" />
+                    </StackPanel>
+                    <Grid Height="40"
+                          Visibility="{Binding ShowLiveManualYRange, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding LiveYMinText, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource FormTextBox}" />
+                        <TextBox Grid.Column="2"
+                                 Text="{Binding LiveYMaxText, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource FormTextBox}" />
+                    </Grid>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Grid.Column="2" Style="{StaticResource AppCard}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBlock Text="💾" Style="{StaticResource EmojiGlyph}" />
+                            <TextBlock Text="历史视图" Style="{StaticResource PanelTitleText}" />
+                        </StackPanel>
+
+                        <TextBlock Text="SQLite 采样间隔" Style="{StaticResource FormSectionTitle}" Margin="0,0,0,8" />
+                        <TextBox Text="{Binding SampleIntervalMsText, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource FormTextBox}"
+                                 ToolTip="{Binding SampleIntervalHint}"
+                                 Margin="0,0,0,6" />
+                        <TextBlock Text="{Binding SampleIntervalHint}"
+                                   Style="{StaticResource CaptionText}"
+                                   TextWrapping="Wrap" />
+
+                        <TextBlock Text="X 轴 · 范围" Style="{StaticResource FormSectionTitle}" Margin="0,12,0,8" />
+                        <Border Style="{StaticResource FormGroupBorder}">
+                            <StackPanel>
+                                <TextBlock Text="范围模式" Style="{StaticResource FormFieldLabel}" />
+                                <ComboBox ItemsSource="{Binding XRangeModeOptions}"
+                                          SelectedItem="{Binding SelectedXRangeMode}"
+                                          DisplayMemberPath="Label"
+                                          Style="{StaticResource FormComboBox}"
+                                          Margin="0,0,0,8" />
+
+                                <Border BorderBrush="{StaticResource FieldBorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Background="White"
+                                        Padding="8"
+                                        MinHeight="120">
+                                    <Grid>
+                                        <StackPanel Visibility="{Binding IsRollingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition Width="88" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Text="时长" Style="{StaticResource FormFieldLabel}" />
+                                                <TextBlock Grid.Column="2" Text="单位" Style="{StaticResource FormFieldLabel}" />
+                                                <TextBox Grid.Row="1"
+                                                         Text="{Binding HistoryRollingWindowValueText, UpdateSourceTrigger=PropertyChanged}"
+                                                         Style="{StaticResource FormTextBox}"
+                                                         ToolTip="{Binding HistoryViewHint}" />
+                                                <ComboBox Grid.Row="1" Grid.Column="2"
+                                                          ItemsSource="{Binding HistoryRollingWindowUnitOptions}"
+                                                          SelectedItem="{Binding SelectedHistoryRollingWindowUnit}"
+                                                          DisplayMemberPath="Label"
+                                                          Style="{StaticResource FormComboBox}" />
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Visibility="{Binding IsAbsoluteMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <TextBlock Text="开始时间" Style="{StaticResource FormFieldLabel}" />
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <DatePicker SelectedDate="{Binding XRangeStartDate}" Height="40" />
+                                                <materialDesign:TimePicker Grid.Column="2"
+                                                                           SelectedTime="{Binding XRangeStartTime, Converter={StaticResource TimeSpanToDateTimeConverter}}"
+                                                                           Height="40"
+                                                                           Is24Hours="True" />
+                                            </Grid>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <CheckBox IsChecked="{Binding XRangeEndFollowsNow}" VerticalAlignment="Center" />
+                                                <TextBlock Text="结束时间跟随当前"
+                                                           Style="{StaticResource CaptionText}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="8,0,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Visibility="{Binding ShowFixedEndTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock Text="结束时间" Style="{StaticResource FormFieldLabel}" />
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="8" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <DatePicker SelectedDate="{Binding XRangeEndDate}" Height="40" />
+                                                    <materialDesign:TimePicker Grid.Column="2"
+                                                                               SelectedTime="{Binding XRangeEndTime, Converter={StaticResource TimeSpanToDateTimeConverter}}"
+                                                                               Height="40"
+                                                                               Is24Hours="True" />
+                                                </Grid>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="{Binding HistoryXAxisHint}"
+                                   Style="{StaticResource CaptionText}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,8,0,0" />
+
+                        <Border Height="1" Background="{StaticResource FieldBorderBrush}" Margin="0,12,0,12" />
+
+                        <TextBlock Text="Y 轴范围" Style="{StaticResource FormSectionTitle}" Margin="0,0,0,8" />
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <CheckBox IsChecked="{Binding HistoryYAutoScale}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding HistoryYScaleModeText}"
+                                       Style="{StaticResource CaptionText}"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0" />
+                        </StackPanel>
+                        <Grid Height="40"
+                              Visibility="{Binding ShowHistoryManualYRange, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding HistoryYMinText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormTextBox}" />
+                            <TextBox Grid.Column="2"
+                                     Text="{Binding HistoryYMaxText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormTextBox}" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:Card>
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Text="{Binding ValidationMessage}"
+                   Foreground="{StaticResource ActionOrangeBrush}"
+                   Height="20"
+                   Margin="0,8,0,0"
+                   Visibility="{Binding ValidationMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+        <Grid Grid.Row="3" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Content="✖ 取消"
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource FilledBlueButton}"
+                    Height="36" />
+            <Button Grid.Column="2"
+                    Content="💾 保存"
+                    Command="{Binding SaveCommand}"
+                    Style="{StaticResource FilledGreenButton}"
+                    Height="36" />
+        </Grid>
+    </Grid>
+</UserControl>

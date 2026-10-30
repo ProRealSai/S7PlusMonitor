@@ -1,0 +1,337 @@
+﻿<Application x:Class="S7PlusMonitor.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:conv="clr-namespace:S7PlusMonitor.Converters"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="DeepOrange" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <SolidColorBrush x:Key="TabSelectedBrush" Color="#D600AA" />
+            <SolidColorBrush x:Key="BrandOrangeBrush" Color="#FF6B35" />
+            <SolidColorBrush x:Key="ActionGreenBrush" Color="#4CAF50" />
+            <SolidColorBrush x:Key="ActionBlueBrush" Color="#2196F3" />
+            <SolidColorBrush x:Key="ActionPurpleBrush" Color="#9C27B0" />
+            <SolidColorBrush x:Key="ActionOrangeBrush" Color="#FF9800" />
+            <SolidColorBrush x:Key="ActionRedBrush" Color="#F44336" />
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#333333" />
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#666666" />
+            <SolidColorBrush x:Key="TextMutedBrush" Color="#999999" />
+            <SolidColorBrush x:Key="ValueChipBrush" Color="#E3F2FD" />
+            <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="PageBackgroundBrush" Color="#F7F8FA" />
+            <SolidColorBrush x:Key="StatusBarBackgroundBrush" Color="#F5F5F5" />
+            <SolidColorBrush x:Key="SectionTintBlueBrush" Color="#F0F8FF" />
+            <SolidColorBrush x:Key="SectionTintGreenBrush" Color="#E8F5E8" />
+            <SolidColorBrush x:Key="FieldBorderBrush" Color="#C8C8C8" />
+            <CornerRadius x:Key="CardCornerRadius">15</CornerRadius>
+            <FontFamily x:Key="AppFontFamily">Segoe UI</FontFamily>
+            <FontFamily x:Key="EmojiFontFamily">Segoe UI Emoji</FontFamily>
+
+            <conv:BoolToExpandGlyphConverter x:Key="BoolToExpandGlyphConverter" />
+            <conv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <conv:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" Invert="True" />
+            <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <conv:TimeSpanToDateTimeConverter x:Key="TimeSpanToDateTimeConverter" />
+            <conv:ZeroCountToVisibilityConverter x:Key="ZeroCountToVisibilityConverter" />
+            <conv:BoolToBrushConverter x:Key="ConnectedStatusColorConverter"
+                                       TrueBrush="{StaticResource ActionGreenBrush}"
+                                       FalseBrush="{StaticResource TextMutedBrush}" />
+            <conv:BoolToBrushConverter x:Key="BoolToTrendActionBackgroundConverter"
+                                       TrueBrush="{StaticResource ActionRedBrush}"
+                                       FalseBrush="{StaticResource ActionBlueBrush}" />
+            <conv:BoolToBrushConverter x:Key="BoolToWarningTextConverter"
+                                       TrueBrush="{StaticResource ActionOrangeBrush}"
+                                       FalseBrush="{StaticResource TextPrimaryBrush}" />
+            <conv:BoolToBrushConverter x:Key="ConnectionChipBackgroundConverter"
+                                       TrueBrush="{StaticResource SectionTintGreenBrush}"
+                                       FalseBrush="{StaticResource StatusBarBackgroundBrush}" />
+
+            <Style x:Key="EmojiGlyph" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource EmojiFontFamily}" />
+                <Setter Property="FontSize" Value="17" />
+                <Setter Property="Margin" Value="0,0,6,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="PanelTitleText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="17" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="CaptionText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            </Style>
+            <Style x:Key="HintText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontFamily" Value="Segoe UI, Segoe UI Emoji" />
+                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+            <Style x:Key="FormFieldLabel" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                <Setter Property="Margin" Value="0,0,0,2" />
+            </Style>
+            <Style x:Key="FormGroupBorder" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource StatusBarBackgroundBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="10" />
+            </Style>
+            <Style x:Key="FormSectionTitle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            </Style>
+            <Style x:Key="FormTextBox" TargetType="TextBox">
+                <Setter Property="Height" Value="40" />
+                <Setter Property="MinHeight" Value="40" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Padding" Value="10,8" />
+                <Setter Property="Background" Value="White" />
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                <Setter Property="CaretBrush" Value="{StaticResource ActionPurpleBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ActionPurpleBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource StatusBarBackgroundBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="FormComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                <Setter Property="Height" Value="40" />
+                <Setter Property="MinHeight" Value="40" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Padding" Value="8,4" />
+                <Setter Property="materialDesign:HintAssist.IsFloating" Value="False" />
+            </Style>
+            <Style x:Key="FormPasswordBox" TargetType="PasswordBox">
+                <Setter Property="Height" Value="40" />
+                <Setter Property="MinHeight" Value="40" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Padding" Value="10,8" />
+                <Setter Property="Background" Value="White" />
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                <Setter Property="CaretBrush" Value="{StaticResource ActionPurpleBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="PasswordBox">
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ActionPurpleBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource StatusBarBackgroundBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="FilledActionButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                <Setter Property="Height" Value="40" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontFamily" Value="Segoe UI Emoji, Segoe UI" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8" />
+            </Style>
+            <Style x:Key="FilledBlueButton" TargetType="Button" BasedOn="{StaticResource FilledActionButton}">
+                <Setter Property="Background" Value="{StaticResource ActionBlueBrush}" />
+            </Style>
+            <Style x:Key="FilledRedButton" TargetType="Button" BasedOn="{StaticResource FilledActionButton}">
+                <Setter Property="Background" Value="{StaticResource ActionRedBrush}" />
+            </Style>
+            <Style x:Key="FilledGreenButton" TargetType="Button" BasedOn="{StaticResource FilledActionButton}">
+                <Setter Property="Background" Value="{StaticResource ActionGreenBrush}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+            <Style x:Key="FilledPurpleButton" TargetType="Button" BasedOn="{StaticResource FilledActionButton}">
+                <Setter Property="Background" Value="{StaticResource ActionPurpleBrush}" />
+            </Style>
+            <Style x:Key="RowBlueButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                <Setter Property="Background" Value="{StaticResource ActionBlueBrush}" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Height" Value="26" />
+                <Setter Property="MinHeight" Value="26" />
+                <Setter Property="MaxHeight" Value="26" />
+                <Setter Property="Padding" Value="8,2" />
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="FontFamily" Value="Segoe UI, Segoe UI Emoji" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="6" />
+            </Style>
+            <Style x:Key="RowRedButton" TargetType="Button" BasedOn="{StaticResource RowBlueButton}">
+                <Setter Property="Background" Value="{StaticResource ActionRedBrush}" />
+            </Style>
+            <Style x:Key="MonitorHeaderText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="TextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="MonitorCellText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            </Style>
+            <Style x:Key="MonitorRowComboBox" TargetType="ComboBox">
+                <Setter Property="Height" Value="32" />
+                <Setter Property="MinHeight" Value="32" />
+                <Setter Property="MaxHeight" Value="32" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Padding" Value="4,2" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="MonitorRowEntry" TargetType="TextBox" BasedOn="{StaticResource FormTextBox}">
+                <Setter Property="Height" Value="28" />
+                <Setter Property="MinHeight" Value="28" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Padding" Value="6,2" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="AppCard" TargetType="materialDesign:Card">
+                <Setter Property="UniformCornerRadius" Value="15" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
+                <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp2" />
+            </Style>
+            <Style x:Key="CellComboBox" TargetType="ComboBox">
+                <Setter Property="Height" Value="28" />
+                <Setter Property="MinHeight" Value="28" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Padding" Value="6,2" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+            </Style>
+            <Style x:Key="DataGridCellCenter" TargetType="DataGridCell">
+                <Setter Property="Padding" Value="6,6" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+            <Style x:Key="AppTabItem" TargetType="TabItem">
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
+                <Setter Property="Padding" Value="16,12" />
+                <Setter Property="MinWidth" Value="64" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Grid Background="Transparent">
+                                <Border Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      RecognizesAccessKey="True" />
+                                </Border>
+                                <Rectangle x:Name="Underline"
+                                           Height="3"
+                                           Width="28"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Bottom"
+                                           RadiusX="1.5"
+                                           RadiusY="1.5"
+                                           Fill="{StaticResource TabSelectedBrush}"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TabSelectedBrush}" />
+                                    <Setter TargetName="Underline" Property="Visibility" Value="Visible" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TabSelectedBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="AppTabControl" TargetType="TabControl">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="ItemContainerStyle" Value="{StaticResource AppTabItem}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabControl">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Top"
+                                        Background="{StaticResource CardBackgroundBrush}"
+                                        BorderBrush="{StaticResource FieldBorderBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="8,0,8,0">
+                                    <TabPanel IsItemsHost="True" HorizontalAlignment="Left" />
+                                </Border>
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  ContentSource="SelectedContent"
+                                                  Margin="0" />
+                            </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

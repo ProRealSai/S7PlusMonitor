@@ -1,0 +1,26 @@
+﻿<Window x:Class="S7PlusMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="S7Plus 监视器"
+        Width="1280"
+        Height="800"
+        MinWidth="900"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource PageBackgroundBrush}"
+        FontFamily="Segoe UI, Segoe UI Emoji, Segoe UI Symbol"
+        TextElement.Foreground="{StaticResource TextPrimaryBrush}"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <DockPanel>
+            <TabControl x:Name="MainTabs" Style="{StaticResource AppTabControl}">
+                <TabItem Header="连接" Tag="connection" />
+                <TabItem Header="浏览" Tag="browse" />
+                <TabItem Header="监视" Tag="monitor" />
+            </TabControl>
+        </DockPanel>
+    </materialDesign:DialogHost>
+</Window>

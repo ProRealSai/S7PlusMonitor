@@ -1,0 +1,119 @@
+<UserControl x:Class="S7PlusMonitor.Pages.BrowsePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:S7PlusMonitor.Views"
+             xmlns:vm="clr-namespace:S7PlusMonitor.ViewModels">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <materialDesign:Card Style="{StaticResource AppCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="180" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="📋" Style="{StaticResource EmojiGlyph}" />
+                        <TextBlock Text="{Binding PanelTitle}" Style="{StaticResource PanelTitleText}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="8,0"
+                               Style="{StaticResource CaptionText}">
+                        <Run Text="共 " /><Run Text="{Binding TotalVariableCount, Mode=OneWay}" /><Run Text=" 个变量" />
+                    </TextBlock>
+                    <Button Grid.Column="2" Content="📥 导出 Excel" Margin="4,0"
+                            Command="{Binding ExportExcelCommand}"
+                            ToolTip="{Binding ExportExcelToolTip}"
+                            Style="{StaticResource FilledBlueButton}"
+                            Width="128" />
+                    <Button Grid.Column="3" Content="🔍 浏览" Margin="4,0,0,0"
+                            Command="{Binding BrowseCommand}"
+                            Style="{StaticResource FilledBlueButton}"
+                            Width="96"
+                            ToolTip="从 PLC 重新加载变量列表" />
+                </Grid>
+                <TextBox Grid.Row="1" Margin="0,8"
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="🔍 过滤符号、类型、地址..."
+                         Style="{StaticResource FormTextBox}" />
+                <DataGrid Grid.Row="2"
+                          ItemsSource="{Binding FilteredVariables}"
+                          SelectedItem="{Binding SelectedVariable}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          EnableRowVirtualization="True"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="None"
+                          BorderThickness="0"
+                          Background="Transparent"
+                          SelectionMode="Single"
+                          RowHeight="44"
+                          MinRowHeight="44">
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource DataGridCellCenter}" />
+                    </DataGrid.CellStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="序号" Binding="{Binding IndexText}" Width="56" />
+                        <DataGridTextColumn Header="符号名" Binding="{Binding Symbol}" Width="*" />
+                        <DataGridTextColumn Header="类型" Binding="{Binding DataType}" Width="140" />
+                        <DataGridTemplateColumn Header="添加监视" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="{x:Type vm:VariableListItemViewModel}">
+                                    <Button Content="➕ 添加" Command="{Binding AddToMonitorCommand}"
+                                            Style="{StaticResource RowBlueButton}"
+                                            ToolTip="将此变量加入当前连接的监视表" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Border Grid.Row="3" Margin="0,8,0,0" Padding="12" CornerRadius="12"
+                        Background="{StaticResource SectionTintBlueBrush}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📝" Style="{StaticResource EmojiGlyph}" />
+                            <TextBlock Text="变量属性" Style="{StaticResource PanelTitleText}" />
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Text="请在列表中选择一个变量"
+                                   Style="{StaticResource HintText}" VerticalAlignment="Center"
+                                   Visibility="{Binding HasNoSelectedVariable, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <DataGrid Grid.Row="1"
+                                  ItemsSource="{Binding SelectedVariableProperties}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="None"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Visibility="{Binding HasSelectedVariable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="属性" Binding="{Binding Name}" Width="140" />
+                                <DataGridTextColumn Header="值" Binding="{Binding Value}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </materialDesign:Card>
+        <views:StatusBarView x:Name="StatusBar" Grid.Row="1" Margin="0,8,0,0" />
+    </Grid>
+</UserControl>
